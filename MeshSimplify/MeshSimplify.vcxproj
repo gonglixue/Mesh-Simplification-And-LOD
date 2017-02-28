@@ -58,6 +58,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\GLshaderJuly\GLshaderJuly\GLSL.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -146,6 +147,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Config.cpp" />
+    <ClCompile Include="edge.cpp" />
+    <ClCompile Include="edgeHeap.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="simplify.cpp" />
+    <ClCompile Include="solve.cpp" />
+    <ClCompile Include="vertex.cpp" />
+    <ClCompile Include="vertexGroup.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="edge.h" />
+    <ClInclude Include="edgeHeap.h" />
+    <ClInclude Include="simplify.h" />
+    <ClInclude Include="solve.h" />
+    <ClInclude Include="vertex.h" />
+    <ClInclude Include="vertexGroup.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
