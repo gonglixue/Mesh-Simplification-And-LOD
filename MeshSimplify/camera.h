@@ -4,7 +4,6 @@
 // Std. Includes
 #include <vector>
 
-#include <GL\glew.h>
 
 // GL Includes
 #include <GL/glew.h>

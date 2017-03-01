@@ -4,6 +4,7 @@ Simplify::Simplify(void)
 	eHeap = new EdgeHeap();
 	vGroup = new VertexGroup();
 	cntFace = 0;
+	printf("finish construct simplify");
 }
 
 Simplify::~Simplify(void)
@@ -57,7 +58,7 @@ void Simplify::start()
 		// 删除v1,v2
 		vGroup->isDeleted[v1->id] = true;
 		vGroup->isDeleted[v2->id] = true;
-
+		//printf("# del %d %d vertex\n", v1->id, v2->id);
 		// 给新点加边
 		for (set<int>::iterator it = connectV.begin(); it != connectV.end(); it++)
 		{
@@ -117,7 +118,7 @@ void Simplify::input()
 			eHeap->addEdge(e);
 		}
 	}
-	cntDelFace = (int)((1 - ratio)*cntFace);//计算应该剩下多少面
+	cntDelFace = (int)((1.0 - ratio)*cntFace);//计算应该剩下多少面
 }
 
 void Simplify::output()
@@ -140,7 +141,7 @@ void Simplify::output()
 		Vertex* v = &(vGroup->group[i]);
 		for (set<int>::iterator it1 = v->neighbors.begin(); it1 != v->neighbors.end(); it1++)
 		{
-			if (i > (*it1))
+			if (i >= (*it1))
 				continue;
 			for (set<int>::iterator it2 = v->neighbors.begin(); it2 != v->neighbors.end(); it2++)
 			{
@@ -165,8 +166,9 @@ void Simplify::calVAndDeltaV(Edge& e) {
 	}
 	// 计算vT(Qv)
 	glm::vec4 temp = mat*X;
-	double pri = X.x*temp.x + X.y*temp.y + X.z*temp.z;
+	double pri = glm::dot(X, temp);
 	e.deltaV = pri;
+	//printf("# edge %d error %f\n", e.id, e.deltaV);
 }
 // Q需要每次收缩都计算吗？？
 glm::mat4 Simplify::calVertexDelta(int _id)
@@ -187,9 +189,9 @@ glm::mat4 Simplify::calVertexDelta(int _id)
 				glm::vec3 normal = glm::normalize(glm::cross(t1, t2));
 				// 求d
 				double d = -(glm::dot(normal, p->pos));
-				glm::vec4 p = glm::vec4(normal, d);
+				glm::vec4 P = glm::vec4(normal, d);
 				// K = ppT
-				glm::mat4 K = glm::outerProduct(p, p);
+				glm::mat4 K = glm::outerProduct(P, P);
 				// 求和
 				Q += K;
 			}
@@ -212,9 +214,16 @@ glm::vec3 Simplify::calVertexPos(Edge& e, glm::mat4 m)
 	glm::vec4 Y = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	Solve* solve = new Solve(m, Y);
 	glm::vec4 ans = solve->getAns();
-	if (ans.w > Config::EPS)
+	if (ans.w > Config::EPS) {
+		//printf("# new v(%f,%f,%f)\n", ans.x, ans.y, ans.z);
 		return glm::vec3(ans.x, ans.y, ans.z);
+	}
+		
 	else
+	{
+		//printf("# new v(%f,%f,%f)\n", mid.x, mid.y, mid.z);
 		return mid;
+	}
+		
 
 }
