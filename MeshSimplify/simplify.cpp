@@ -110,8 +110,8 @@ void Simplify::input()
 	for (int i = 1; i <= vGroup->cntVertex; i++) {
 		for (set<int>::iterator it = vGroup->group[i].neighbors.begin(); it != vGroup->group[i].neighbors.end(); it++)
 		{
-			//if (i < (*it))
-				//break;
+			if (i < (*it))
+				break;
 			Edge e((*it), i);
 			calVAndDeltaV(e);  // 每创建一条边，为其计算收缩后的点和error
 			eHeap->addEdge(e);
