@@ -63,7 +63,7 @@ void Simplify::start()
 		{
 			Edge e((*it), v0_id);
 			calVAndDeltaV(e);  // 计算该边的v和delta
-
+			eHeap->addEdge(e);
 		}
 	}
 }

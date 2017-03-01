@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 		meshSimplify->setRatio(atof(argv[3]));  // 简化率
 		meshSimplify->input();  // 读入
 		meshSimplify->start();  // 开始简化
-		meshSimplify->output();  // 输出
+		meshSimplify->output();  // 输出文件
 
 		clock_t finish = clock();
 		cout << "# time use: " << (double)(finish - start) / CLOCKS_PER_SEC << "s" << endl;
