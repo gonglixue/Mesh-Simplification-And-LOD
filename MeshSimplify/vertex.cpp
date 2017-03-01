@@ -6,7 +6,7 @@ Vertex::Vertex(void)
 	neighbors.clear();
 }
 
-Vertex::Vertex(glm::dvec3 t)
+Vertex::Vertex(glm::vec3 t)
 {
 	id = -98;
 	neighbors.clear();
@@ -17,7 +17,7 @@ Vertex::Vertex(double x, double y, double z)
 {
 	id = -97;
 	neighbors.clear();
-	pos = glm::dvec3(x, y, z);
+	pos = glm::vec3(x, y, z);
 }
 
 Vertex::~Vertex(void){}

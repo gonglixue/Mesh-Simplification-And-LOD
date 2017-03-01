@@ -2,3 +2,5 @@ MeshSimplify.VC.db
 MeshSimplify.VC.VC.opendb
 Debug/
 .vs/
+MeshSimplify.vcxproj
+MeshSimplify.vcxproj.filters

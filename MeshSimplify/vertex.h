@@ -7,12 +7,12 @@ class Vertex
 {
 public:
 	Vertex(void);
-	Vertex(glm::dvec3);
+	Vertex(glm::vec3);
 	Vertex(double, double, double);
 	~Vertex(void);
 
 	int id; // 顶点编号
-	glm::dvec3 pos;
+	glm::vec3 pos;
 	std::set<int> neighbors;  // 邻接点
 	void addConnectVertex(int);  // 添加编号为int的邻接点
 	void delConnectVertex(int);  // 删除编号为int的邻接点

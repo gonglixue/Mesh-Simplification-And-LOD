@@ -140,7 +140,7 @@ void Simplify::output()
 		Vertex* v = &(vGroup->group[i]);
 		for (set<int>::iterator it1 = v->neighbors.begin(); it1 != v->neighbors.end(); it1++)
 		{
-			if(i > (*it1))
+			if (i > (*it1))
 				continue;
 			for (set<int>::iterator it2 = v->neighbors.begin(); it2 != v->neighbors.end(); it2++)
 			{
@@ -152,4 +152,69 @@ void Simplify::output()
 			}
 		}
 	}
+}
+
+void Simplify::calVAndDeltaV(Edge& e) {
+	glm::mat4 mat = calVertexDelta(e.v1) + calVertexDelta(e.v2);
+	e.v = calVertexPos(e, mat);  //计算边e收缩后的产生的新点的坐标
+	glm::vec4 X(e.v.x, e.v.y, e.v.z, 1.0f);  // column vector
+	if (vGroup->getCommonVertexNum(e.v1, e.v2) != 2)
+	{
+		e.deltaV = 0;
+		return;
+	}
+	// 计算vT(Qv)
+	glm::vec4 temp = mat*X;
+	double pri = X.x*temp.x + X.y*temp.y + X.z*temp.z;
+	e.deltaV = pri;
+}
+// Q需要每次收缩都计算吗？？
+glm::mat4 Simplify::calVertexDelta(int _id)
+{
+	glm::mat4 Q(0.0);  // 默认为单位阵。需初始化为0
+	Vertex* p = &(vGroup->group[_id]);
+	for (set<int>::iterator it1 = p->neighbors.begin(); it1 != p->neighbors.end(); it1++) {
+		for (set<int>::iterator it2 = p->neighbors.begin(); it2 != p->neighbors.end(); it2++)
+		{
+			if ((*it1) < (*it2) && (vGroup->group[*it1].isExistConnectVertex(*it2)))
+			{
+				Vertex* v1 = &(vGroup->group[(*it1)]);
+				Vertex* v2 = &(vGroup->group[(*it2)]);
+				// p v1 v2构成一个face, 平面方程ax+by+cz+d=0
+				// 求face的法向量(a,b,c)
+				glm::vec3 t1 = v1->pos - p->pos;
+				glm::vec3 t2 = v2->pos - p->pos;
+				glm::vec3 normal = glm::normalize(glm::cross(t1, t2));
+				// 求d
+				double d = -(glm::dot(normal, p->pos));
+				glm::vec4 p = glm::vec4(normal, d);
+				// K = ppT
+				glm::mat4 K = glm::outerProduct(p, p);
+				// 求和
+				Q += K;
+			}
+		}
+	}
+	return Q;
+}
+
+// 计算收缩后产生的新点的坐标
+glm::vec3 Simplify::calVertexPos(Edge& e, glm::mat4 m)
+{
+	glm::vec3 mid = (vGroup->group[e.v1].pos + vGroup->group[e.v2].pos) / 2.0f;  //中点，应对退化的情况
+	// 重置矩阵最后一行为 0 0 0 1
+	// opengl 矩阵默认索引为：mat[col][row]
+	m[0][3] = 0;
+	m[1][3] = 0;
+	m[2][3] = 0;
+	m[3][3] = 1;
+
+	glm::vec4 Y = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	Solve* solve = new Solve(m, Y);
+	glm::vec4 ans = solve->getAns();
+	if (ans.w > Config::EPS)
+		return glm::vec3(ans.x, ans.y, ans.z);
+	else
+		return mid;
+
 }
