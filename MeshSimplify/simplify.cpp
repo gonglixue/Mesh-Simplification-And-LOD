@@ -121,6 +121,62 @@ void Simplify::input()
 	cntDelFace = (int)((1.0 - ratio)*cntFace);//计算应该剩下多少面
 }
 
+void Simplify::input(string inFile)
+{
+	int cntv = 0, cntf = 0;
+
+	ifstream input_file(inFile);  // 打开obj文件
+	const int LINE_LENGTH = 100;
+	char str[LINE_LENGTH];
+
+	while (input_file) {  
+		string type;
+		input_file >> type; //读取一词（space split) v or f
+		switch (type[0]) {
+		case '#': {
+			string comment;
+			getline(input_file, comment);
+			printf("# %s\n", comment);
+			break;
+		}
+		case 'v': {
+			cntv++;
+			double x, y, z;
+			input_file >> x >> y >> z;
+			vGroup->addVertex(Vertex(x, y, z));
+			break;
+		}
+		case 'f': {
+			cntf++;
+			cntFace++;
+			int a, b, c;  // face的顶点索引
+			input_file >> a >> b >> c;
+			// 建立邻接关系
+			vGroup->group[a].addConnectVertex(b);
+			vGroup->group[a].addConnectVertex(c);
+			vGroup->group[b].addConnectVertex(a);
+			vGroup->group[b].addConnectVertex(c);
+			vGroup->group[c].addConnectVertex(a);
+			vGroup->group[c].addConnectVertex(b);
+		}
+		default:break;
+		}
+	}
+
+	// 将边加入到堆中
+	for (int i = 1; i <= vGroup->cntVertex; i++) {
+		for (set<int>::iterator it = vGroup->group[i].neighbors.begin(); it != vGroup->group[i].neighbors.end(); it++)
+		{
+			if (i < (*it))
+				break;
+			Edge e((*it), i);
+			calVAndDeltaV(e);  // 每创建一条边，为其计算收缩后的点和error
+			eHeap->addEdge(e);
+		}
+	}
+	cntDelFace = (int)((1.0 - ratio)*cntFace);//计算应该剩下多少面
+}
+
 void Simplify::output()
 {
 	int cnt = 0;

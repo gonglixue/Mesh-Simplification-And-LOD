@@ -3,6 +3,7 @@
 #include "vertexGroup.h"
 #include "solve.h"
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -20,6 +21,7 @@ public:
 	void setLeftFaceNum(int);
 
 	void input();
+	void input(string inFile);
 	void start();
 	void output();
 
