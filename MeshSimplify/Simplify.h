@@ -24,6 +24,7 @@ public:
 	void input(string inFile);
 	void start();
 	void output();
+	void output(string outFile);
 
 	glm::mat4 calVertexDelta(int);
 	glm::vec3 calVertexPos(Edge&, glm::mat4); // 根据一个遍两个点的误差矩阵计算收缩后的点位置

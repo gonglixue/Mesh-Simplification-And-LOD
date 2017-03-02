@@ -127,15 +127,15 @@ void Simplify::input(string inFile)
 
 	ifstream input_file(inFile);  // 打开obj文件
 	const int LINE_LENGTH = 100;
-	char str[LINE_LENGTH];
+	//char str[LINE_LENGTH];
 
 	while (input_file) {  
 		string type;
 		input_file >> type; //读取一词（space split) v or f
 		switch (type[0]) {
 		case '#': {
-			string comment;
-			getline(input_file, comment);
+			char comment[LINE_LENGTH];
+			input_file.getline(comment, LINE_LENGTH);
 			printf("# %s\n", comment);
 			break;
 		}
@@ -151,6 +151,7 @@ void Simplify::input(string inFile)
 			cntFace++;
 			int a, b, c;  // face的顶点索引
 			input_file >> a >> b >> c;
+			//printf("f %d %d %d", a, b, c);
 			// 建立邻接关系
 			vGroup->group[a].addConnectVertex(b);
 			vGroup->group[a].addConnectVertex(c);
@@ -209,6 +210,45 @@ void Simplify::output()
 			}
 		}
 	}
+}
+
+void Simplify::output(string outFile)
+{
+	int cnt = 0;
+	int cntv = 0, cntf = 0;
+	ofstream out_file(outFile);
+
+	// 写入顶点
+	for (int i = 1; i <= vGroup->cntVertex; i++)
+	{
+		if (vGroup->isDeleted[i])
+			continue;
+		Vertex* v = &(vGroup->group[i]);
+		cnt++;
+		v->id = cnt;
+		out_file << "v ";
+		out_file << v->pos.x << " " << v->pos.y << " " << v->pos.z << endl;
+	}
+	// 写入face
+	for (int i = 1; i <= vGroup->cntVertex; i++)
+	{
+		if (vGroup->isDeleted[i])
+			continue;
+		Vertex* v = &(vGroup->group[i]);
+		for (set<int>::iterator it1 = v->neighbors.begin(); it1 != v->neighbors.end(); it1++) {
+			if (i >= (*it1))
+				continue;
+			for (set<int>::iterator it2 = v->neighbors.begin(); it2 != v->neighbors.end(); it2++)
+			{
+				if ((*it1) < (*it2) && (vGroup->group[(*it1)].isExistConnectVertex(*it2)))
+				{
+					out_file << "f " << v->id << " " << vGroup->group[(*it1)].id << " " << vGroup->group[(*it2)].id << endl;
+					cntf++;
+				}
+			}
+		}
+	}
+
 }
 
 void Simplify::calVAndDeltaV(Edge& e) {
