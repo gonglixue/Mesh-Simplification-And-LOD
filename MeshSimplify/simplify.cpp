@@ -63,7 +63,8 @@ void Simplify::start()
 		for (set<int>::iterator it = connectV.begin(); it != connectV.end(); it++)
 		{
 			Edge e((*it), v0_id);
-			calVAndDeltaV(e);  // 计算该边的v和delta
+			//calVAndDeltaV(e,false,v0_id);  // 计算该边的v和delta,不是初始化，产生新点v0_id
+			calVAndDeltaV(e);
 			eHeap->addEdge(e);
 		}
 	}
@@ -171,7 +172,7 @@ void Simplify::input(string inFile)
 			if (i < (*it))
 				break;
 			Edge e((*it), i);
-			calVAndDeltaV(e);  // 每创建一条边，为其计算收缩后的点和error
+			calVAndDeltaV(e);  // 每创建一条边，为其计算收缩后的点和error,初始化
 			eHeap->addEdge(e);
 		}
 	}
@@ -251,8 +252,23 @@ void Simplify::output(string outFile)
 
 }
 
-void Simplify::calVAndDeltaV(Edge& e) {
-	glm::mat4 mat = calVertexDelta(e.v1) + calVertexDelta(e.v2);
+void Simplify::calVAndDeltaV(Edge& e,bool isInitial,int newPointID) {
+	glm::mat4 mat;
+	//if (isInitial) // 初始化时，使用面法线来为每个顶点计算
+		mat = calVertexDelta(e.v1) + calVertexDelta(e.v2);
+	//else // 对于收缩产生的新点，新点v的Q=Q1+Q2
+	//{
+		//mat = (vGroup->group[e.v1]).matQ + (vGroup->group[e.v2]).matQ;
+		//(vGroup->group[e.v]).mat
+	//}
+
+	// 如果不是初始化，newPointID代表e收缩后产生新点v的Q
+	//if (newPointID != -1)
+	//{
+		//(vGroup->group[newPointID]).matQ = mat;
+	//}
+		
+
 	e.v = calVertexPos(e, mat);  //计算边e收缩后的产生的新点的坐标
 	glm::vec4 X(e.v.x, e.v.y, e.v.z, 1.0f);  // column vector
 	if (vGroup->getCommonVertexNum(e.v1, e.v2) != 2)
@@ -266,7 +282,7 @@ void Simplify::calVAndDeltaV(Edge& e) {
 	e.deltaV = pri;
 	//printf("# edge %d error %f\n", e.id, e.deltaV);
 }
-// Q需要每次收缩都计算吗？？
+// Q需要每次收缩都计算吗？？收缩产生的新点的Q=Q1+Q2?
 glm::mat4 Simplify::calVertexDelta(int _id)
 {
 	glm::mat4 Q(0.0);  // 默认为单位阵。需初始化为0
@@ -293,6 +309,7 @@ glm::mat4 Simplify::calVertexDelta(int _id)
 			}
 		}
 	}
+	//p->matQ = Q;
 	return Q;
 }
 

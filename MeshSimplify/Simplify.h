@@ -29,5 +29,5 @@ public:
 	glm::mat4 calVertexDelta(int);
 	glm::vec3 calVertexPos(Edge&, glm::mat4); // 根据一个遍两个点的误差矩阵计算收缩后的点位置
 
-	void calVAndDeltaV(Edge&);  //计算并确定一个边的v和deltaV;
+	void calVAndDeltaV(Edge&,bool isInitial=true,int newPointID=-1);  //计算并确定一个边的v和deltaV;
 };

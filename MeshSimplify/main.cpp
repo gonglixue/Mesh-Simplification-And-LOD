@@ -92,12 +92,24 @@ int main(int argc, char* argv[])
 		//freopen(argv[1], "r", stdin);
 		//freopen(argv[2], "w", stdout);
 		meshSimplify->setRatio(atof(argv[3]));  // 简化率
-		printf("input\n");
+		printf("input:");
+
+		clock_t start_input = clock();
 		meshSimplify->input(argv[1]);  // 读入
-		printf("开始简化\n");
+		clock_t finish_input = clock();
+		printf(" input cost: %fs\n", (double)(finish_input - start_input) / CLOCKS_PER_SEC);
+
+		printf("开始简化:");
+		clock_t start_simp = clock();
 		meshSimplify->start();  // 开始简化
-		printf("简化完毕，开始写入\n");
+		clock_t finish_simp = clock();
+		printf(" simplification cost: %fs\n", (double)(finish_simp - start_simp) / CLOCKS_PER_SEC);
+
+		printf("简化完毕，开始写入:");
+		clock_t start_output = clock();
 		meshSimplify->output(argv[2]);  // 输出文件
+		clock_t finish_output = clock();
+		printf(" output cost: %fs\n", (double)(finish_output - start_output) / CLOCKS_PER_SEC);
 
 		clock_t finish = clock();
 		cout << "# time use: " << (double)(finish - start) / CLOCKS_PER_SEC << "s" << endl;
